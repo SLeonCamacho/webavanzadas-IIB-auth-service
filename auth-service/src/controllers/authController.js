@@ -2,6 +2,7 @@ const { pool } = require('../config/database');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
+// Registro
 const register = async (req, res) => {
   const { name, email, password } = req.body;
 
@@ -25,6 +26,7 @@ const register = async (req, res) => {
   }
 };
 
+// Login
 const login = async (req, res) => {
   const { email, password } = req.body;
 
@@ -59,7 +61,70 @@ const login = async (req, res) => {
   }
 };
 
+// Obtener usuario por email
+const getUserByEmail = async (req, res) => {
+  const { email } = req.params;
+
+  try {
+    const client = await pool.connect();
+    const result = await client.query('SELECT email FROM Users WHERE email = $1', [email]);
+    client.release();
+
+    if (result.rows.length === 0) {
+      return res.status(404).send('User not found');
+    }
+
+    res.json(result.rows[0]);
+  } catch (error) {
+    console.error('Error fetching user:', error);
+    res.status(500).send('Error fetching user');
+  }
+};
+
+// Obtener nombre de usuario por email
+const getUserNameByEmail = async (req, res) => {
+  const { email } = req.params;
+
+  try {
+    const client = await pool.connect();
+    const result = await client.query('SELECT name FROM Users WHERE email = $1', [email]);
+    client.release();
+
+    if (result.rows.length === 0) {
+      return res.status(404).send('User not found');
+    }
+
+    res.json(result.rows[0]);
+  } catch (error) {
+    console.error('Error fetching user:', error);
+    res.status(500).send('Error fetching user');
+  }
+};
+
+// Obtener ID de usuario por email
+const getUserIDByEmail = async (req, res) => {
+  const { email } = req.params;
+
+  try {
+    const client = await pool.connect();
+    const result = await client.query('SELECT id FROM Users WHERE email = $1', [email]);
+    client.release();
+
+    if (result.rows.length === 0) {
+      return res.status(404).send('User not found');
+    }
+
+    res.json(result.rows[0]);
+  } catch (error) {
+    console.error('Error fetching user:', error);
+    res.status(500).send('Error fetching user');
+  }
+};
+
 module.exports = {
   register,
   login,
+  getUserByEmail,
+  getUserNameByEmail,
+  getUserIDByEmail,
 };
