@@ -28,5 +28,5 @@ app.get('/', (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(`Auth service running on port ${port}`);
+  console.log(`Auth service running on docker port ${process.env.PORT_DOCKER}`);
 });
