@@ -40,14 +40,14 @@ const login = async (req, res) => {
     client.release();
 
     if (result.rows.length === 0) {
-      return res.status(401).send('Invalid credentials');
+      return res.status(401).send('Invalid credentials: user not found');
     }
 
     const user = result.rows[0];
     const validPassword = await bcrypt.compare(password, user.password);
 
     if (!validPassword) {
-      return res.status(401).send('Invalid credentials');
+      return res.status(401).send('Invalid credentials: wrong password');
     }
 
     const token = jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET, {
