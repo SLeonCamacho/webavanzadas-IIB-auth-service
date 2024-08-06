@@ -20,7 +20,7 @@ app.get('/insert-data', async (req, res) => {
 });
 
 // Rutas de autenticación
-app.use('/auth', authRoutes);
+app.use('/', authRoutes);
 
 // Endpoint para probar la conexión
 app.get('/', (req, res) => {
