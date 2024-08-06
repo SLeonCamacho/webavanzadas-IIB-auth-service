@@ -121,10 +121,31 @@ const getUserIDByEmail = async (req, res) => {
   }
 };
 
+// Validar existencia de un usuario por id
+const validateUser = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const client = await pool.connect();
+    const result = await client.query('SELECT * FROM Users WHERE id = $1', [id]);
+    client.release();
+
+    if (result.rows.length === 0) {
+      return res.status(404).send('User not found');
+    }
+
+    res.status(200).send('User exists');
+  } catch (error) {
+    console.error('Error validating user:', error);
+    res.status(500).send('Error validating user');
+  }
+};
+
 module.exports = {
   register,
   login,
   getUserByEmail,
   getUserNameByEmail,
   getUserIDByEmail,
+  validateUser,
 };
