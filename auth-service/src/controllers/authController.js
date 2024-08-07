@@ -1,6 +1,17 @@
 const { pool } = require('../config/database');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const fs = require('fs');
+const path = require('path');
+
+// Función para escribir logs
+const logEvent = (user, ip) => {
+  const logMessage = `${new Date().toISOString()} - IP: ${ip}, User ID: ${user.id}, Name: ${user.name}, Email: ${user.email}\n`;
+  const logPath = path.join(__dirname, '../logs', 'auth.log');
+  fs.appendFile(logPath, logMessage, (err) => {
+    if (err) console.error('Error writing to log file', err);
+  });
+};
 
 // Registro
 const register = async (req, res) => {
@@ -54,6 +65,7 @@ const login = async (req, res) => {
       expiresIn: '1h',
     });
 
+    logEvent(user, req.ip);  // Llamada para registrar el log de inicio de sesión
     res.json({ token });
   } catch (error) {
     console.error('Error logging in user:', error);
@@ -169,37 +181,6 @@ const updatePassword = async (req, res) => {
   }
 };
 
-// Validar token JWT y devolver información del usuario
-const me = async (req, res) => {
-  const authHeader = req.headers.authorization;
-  const token = authHeader && authHeader.split(' ')[1];
-
-  if (!token) {
-    return res.status(401).send('No token provided');
-  }
-
-  jwt.verify(token, process.env.JWT_SECRET, async (err, user) => {
-    if (err) {
-      return res.status(403).send('Token is not valid');
-    }
-
-    try {
-      const client = await pool.connect();
-      const result = await client.query('SELECT id, name, email FROM Users WHERE id = $1', [user.id]);
-      client.release();
-
-      if (result.rows.length === 0) {
-        return res.status(404).send('User not found');
-      }
-
-      res.json(result.rows[0]);
-    } catch (error) {
-      console.error('Error fetching user:', error);
-      res.status(500).send('Error fetching user');
-    }
-  });
-};
-
 module.exports = {
   register,
   login,
@@ -208,5 +189,4 @@ module.exports = {
   getUserIDByEmail,
   validateUser,
   updatePassword,
-  me,
 };
