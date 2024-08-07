@@ -1,5 +1,13 @@
 const express = require('express');
-const { register, login, getUserByEmail, getUserNameByEmail, getUserIDByEmail, validateUser, updatePassword, me } = require('../controllers/authController');
+const {
+  register,
+  login,
+  getUserByEmail,
+  getUserNameByEmail,
+  getUserIDByEmail,
+  validateUser,
+  updatePassword
+} = require('../controllers/authController');
 
 const router = express.Router();
 
@@ -10,6 +18,5 @@ router.get('/user/name/:email', getUserNameByEmail);
 router.get('/user/id/:email', getUserIDByEmail);
 router.get('/validate-user/:id', validateUser);
 router.put('/update-password', updatePassword);
-router.get('/me', me);
 
 module.exports = router;

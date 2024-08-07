@@ -2,13 +2,14 @@ const { pool } = require('../config/database');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const winston = require('winston');
+const path = require('path');
 
 // Configuración de Winston para logs
 const logger = winston.createLogger({
   level: 'info',
   format: winston.format.json(),
   transports: [
-    new winston.transports.File({ filename: 'logs/auth.log', level: 'info' }),
+    new winston.transports.File({ filename: path.join(__dirname, '../../logs/auth.log'), level: 'info' }),
     new winston.transports.Console({ format: winston.format.simple() }),
   ],
 });
