@@ -141,6 +141,34 @@ const validateUser = async (req, res) => {
   }
 };
 
+// Añadir esto en el archivo authController.js
+const updatePassword = async (req, res) => {
+  const { email, newPassword } = req.body;
+
+  if (!email || !newPassword) {
+    return res.status(400).send('All fields are required');
+  }
+
+  try {
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    const client = await pool.connect();
+    const result = await client.query(
+      'UPDATE Users SET password = $1 WHERE email = $2 RETURNING id, email',
+      [hashedPassword, email]
+    );
+    client.release();
+
+    if (result.rows.length === 0) {
+      return res.status(404).send('User not found');
+    }
+
+    res.status(200).json(result.rows[0]);
+  } catch (error) {
+    console.error('Error updating password:', error);
+    res.status(500).send('Error updating password');
+  }
+};
+
 module.exports = {
   register,
   login,
@@ -148,4 +176,5 @@ module.exports = {
   getUserNameByEmail,
   getUserIDByEmail,
   validateUser,
+  updatePassword,
 };
