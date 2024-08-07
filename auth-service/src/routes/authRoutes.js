@@ -7,7 +7,7 @@ const {
   getUserIDByEmail,
   validateUser,
   updatePassword,
-  me
+  me,
 } = require('../controllers/authController');
 
 const router = express.Router();
@@ -19,6 +19,6 @@ router.get('/user/name/:email', getUserNameByEmail);
 router.get('/user/id/:email', getUserIDByEmail);
 router.get('/validate-user/:id', validateUser);
 router.put('/update-password', updatePassword);
-router.get('/me', verifyToken, me); // Esta es la ruta que necesitas
+router.get('/me', me); // Esta es la ruta que necesitas
 
 module.exports = router;
