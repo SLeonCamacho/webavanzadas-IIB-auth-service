@@ -24,7 +24,6 @@ const logEvent = (user, ip) => {
     email: user.email,
   });
 };
-
 // Registro
 const register = async (req, res) => {
   const { name, email, password } = req.body;
@@ -77,6 +76,7 @@ const login = async (req, res) => {
       expiresIn: '1h',
     });
 
+    
     logEvent(user, req.ip);  // Llamada para registrar el log de inicio de sesión
     res.json({ token });
   } catch (error) {
@@ -193,6 +193,26 @@ const updatePassword = async (req, res) => {
   }
 };
 
+// Obtener información del usuario
+const me = async (req, res) => {
+  const { id } = req.user;
+
+  try {
+    const client = await pool.connect();
+    const result = await client.query('SELECT id, name, email FROM Users WHERE id = $1', [id]);
+    client.release();
+
+    if (result.rows.length === 0) {
+      return res.status(404).send('User not found');
+    }
+
+    res.json(result.rows[0]);
+  } catch (error) {
+    console.error('Error fetching user:', error);
+    res.status(500).send('Error fetching user');
+  }
+};
+
 module.exports = {
   register,
   login,
@@ -201,4 +221,5 @@ module.exports = {
   getUserIDByEmail,
   validateUser,
   updatePassword,
+  me,
 };
