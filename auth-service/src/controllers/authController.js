@@ -1,15 +1,26 @@
 const { pool } = require('../config/database');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const fs = require('fs');
-const path = require('path');
+const winston = require('winston');
 
-// Función para escribir logs
+// Configuración de Winston para logs
+const logger = winston.createLogger({
+  level: 'info',
+  format: winston.format.json(),
+  transports: [
+    new winston.transports.File({ filename: 'logs/auth.log', level: 'info' }),
+    new winston.transports.Console({ format: winston.format.simple() }),
+  ],
+});
+
+// Función para registrar eventos de log
 const logEvent = (user, ip) => {
-  const logMessage = `${new Date().toISOString()} - IP: ${ip}, User ID: ${user.id}, Name: ${user.name}, Email: ${user.email}\n`;
-  const logPath = path.join(__dirname, '../logs', 'auth.log');
-  fs.appendFile(logPath, logMessage, (err) => {
-    if (err) console.error('Error writing to log file', err);
+  logger.info({
+    timestamp: new Date().toISOString(),
+    ip: ip,
+    user_id: user.id,
+    name: user.name,
+    email: user.email,
   });
 };
 
