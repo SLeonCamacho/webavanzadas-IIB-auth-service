@@ -28,5 +28,6 @@ services:
     volumes:
       - .:/usr/src/app  # Mapea el código fuente local al contenedor
       - /usr/src/app/node_modules  # Evita que se sobreescriban los módulos de node
+      - ./logs:/usr/src/app/logs
 volumes:
   db-data:
